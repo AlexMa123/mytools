@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='mytools',
@@ -9,3 +9,5 @@ setup(
     packages=['mytools'],
     install_requires=['numpy', 'scipy', 'matplotlib', 'pyedflib']
 )
+
+find_packages()
