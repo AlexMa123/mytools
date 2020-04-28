@@ -3,11 +3,11 @@ Used to read the files I needed. Like rri, event files.
 """
 import pandas as pd
 import codecs
-import pyedflib
+# import pyedflib
 import numpy as np
 import datetime
 # from . import tools
-from .tools import get_time_diff, get_time_diff_embla, get_time_diff_somn, str_to_float
+from ..tools import get_time_diff, get_time_diff_embla, get_time_diff_somn, str_to_float
 
 
 def read_rri(rri_file, edf_starttime=None):
@@ -47,7 +47,6 @@ def read_rri(rri_file, edf_starttime=None):
     if edf_starttime is not None:
         data = data + (file_starttime - edf_starttime).seconds * freq
     return data, freq
-
 
 
 def get_data_from_edf(edffile, str, sensor="Thermistor"):
@@ -99,8 +98,8 @@ def alice_csv(csvfile, starttime, apnea_type):
             ApneaEndtime[i] = np.array([])
             continue
         vec_fun = np.vectorize(get_time_diff, excluded=['starttime'])
-        time_diff = vec_fun(days[real_apnea_index], apnea_time[real_apnea_index],
-                            starttime)
+        time_diff = vec_fun(days[real_apnea_index],
+                            apnea_time[real_apnea_index], starttime)
         vec_fun = np.vectorize(str_to_float)
         duration = vec_fun(duration[real_apnea_index])
         ApneaStarttime[i] = time_diff
@@ -111,7 +110,7 @@ def alice_csv(csvfile, starttime, apnea_type):
 def embla_csv(csvfile, starttime, apnea_type):
     if type(apnea_type) == list:
         apnea_type = np.array(apnea_type)
- 
+
     f = codecs.open(csvfile, 'r', "windows-1252")
     for i in range(3):
         f.readline()
@@ -144,7 +143,7 @@ def embla_csv(csvfile, starttime, apnea_type):
 def somnoscreen_csv(csvfolder, starttime, apnea_type):
     if type(apnea_type) == list:
         apnea_type = np.array(apnea_type)
- 
+
     f = open(csvfolder + "Flow Events.txt", "r")
     f.readline()
     startday = f.readline()
@@ -175,4 +174,3 @@ def somnoscreen_csv(csvfolder, starttime, apnea_type):
             ApneaEndtime[i] = ApneaStarttime[i] + Duration
 
     return ApneaStarttime, ApneaEndtime
-

@@ -3,6 +3,7 @@ tools used by the other files
 """
 
 import datetime
+from datetime import timedelta
 
 
 def str_to_float(duration):
@@ -48,3 +49,22 @@ def get_time_diff_somn(str_day, str_time, starttime):
         return time_diff
     else:
         return time_diff + 24 * 3600
+
+
+def time_delta(edfstarttime, time_str):
+    """
+    time_str should be "hour:minite:second"
+    """
+    if time_str[0] == " ":
+        time_str = time_str[1:]
+    h, m, s = int(time_str[:2]), int(time_str[3:5]), int(time_str[6:])
+    year, month, days = edfstarttime.year, edfstarttime.month, edfstarttime.day
+    add_a_day = False
+    if h >= 24:
+        h -= 24
+        add_a_day = True
+    new_time = datetime(year, month, days, h, m, s)
+    if add_a_day:
+        new_time = new_time + timedelta(days=1)
+    deltat = (new_time - edfstarttime)
+    return deltat.seconds + deltat.days * 24 * 3600

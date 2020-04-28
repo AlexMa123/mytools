@@ -1,2 +1,2 @@
 # mytools
-The function I used to do my sleep research
+The functions I used to do my sleep research
