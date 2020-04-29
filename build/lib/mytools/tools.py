@@ -62,9 +62,8 @@ def time_delta(edfstarttime, time_str):
     add_a_day = False
     if h >= 24:
         h -= 24
-        if edfstarttime.hour >= 12:
-            add_a_day = True
-    new_time = datetime.datetime(year, month, days, h, m, s)
+        add_a_day = True
+    new_time = datetime(year, month, days, h, m, s)
     if add_a_day:
         new_time = new_time + timedelta(days=1)
     deltat = (new_time - edfstarttime)
