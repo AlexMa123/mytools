@@ -1,7 +1,8 @@
 README.md
 setup.py
 mytools/__init__.py
-mytools/tools.py
+mytools/signaltools.py
+mytools/timetools.py
 mytools.egg-info/PKG-INFO
 mytools.egg-info/SOURCES.txt
 mytools.egg-info/dependency_links.txt
@@ -10,4 +11,5 @@ mytools.egg-info/top_level.txt
 mytools/breathing_freq/__init__.py
 mytools/breathing_freq/breathing_freq.py
 mytools/fileio/__init__.py
-mytools/fileio/fileio.py
+mytools/fileio/edfio.py
+mytools/fileio/textio.py
