@@ -7,7 +7,7 @@ import codecs
 import numpy as np
 import datetime
 # from . import tools
-from ..tools import get_time_diff, get_time_diff_embla, get_time_diff_somn, str_to_float
+from ..timetools import get_time_diff, get_time_diff_embla, get_time_diff_somn, str_to_float
 
 
 def read_rri(rri_file, edf_starttime=None):

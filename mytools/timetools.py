@@ -69,5 +69,3 @@ def time_delta(edfstarttime, time_str):
         new_time = new_time + timedelta(days=1)
     deltat = (new_time - edfstarttime)
     return deltat.seconds + deltat.days * 24 * 3600
-
-
