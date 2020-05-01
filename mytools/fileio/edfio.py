@@ -70,8 +70,12 @@ def get_signal_from_edf(edffile, index, isclose=True):
             return get_signal_from_edf(edffile, index)
 
 
-def save_signal(signals, freqs, labels, patid, starttime=None):
-    path = "./" + patid + "/"
+def save_signal(signals, freqs, labels, patid, path=None, starttime=None):
+    """
+    save signals to txt files
+    """
+    if path is None:
+        path = "./" + patid + "/"
     folder = os.path.exists(path)
     if not folder:
         os.makedirs(path)
