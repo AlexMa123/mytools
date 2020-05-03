@@ -92,4 +92,4 @@ def save_signal(signals, freqs, labels, patid, path=None, starttime=None):
         f.close()
     else:
         for i in range(freqs.size):
-            save_signal(signals[i], freqs[i], labels[i], patid, starttime)
+            save_signal(signals[i], freqs[i], labels[i], patid, path, starttime)

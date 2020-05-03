@@ -1,4 +1,6 @@
 import numpy as np
+from mkl_fft import fft
+from .phase_sync.tools import hilbert, phase
 
 
 def powerspectrum(signal, freq=1, removemean=True):
@@ -14,7 +16,7 @@ def powerspectrum(signal, freq=1, removemean=True):
     """
     if removemean:
         signal = signal - np.mean(signal)
-    fft_result = np.fft.fft(signal)
+    fft_result = fft(signal)
     size = signal.size
     spectrum = np.abs(fft_result[:size//2]) ** 2
     f = np.fft.fftfreq(size, 1/freq)
