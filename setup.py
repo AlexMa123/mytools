@@ -7,5 +7,5 @@ setup(
     author='Yaopeng Ma',
     author_email="sdumyp@126.com",
     packages=find_packages(),
-    install_requires=['numpy', 'scipy', 'matplotlib', 'pyedflib', 'biosppy']
+    install_requires=['numpy', 'scipy', 'matplotlib', 'pyedflib', 'biosppy', 'mkl_fft']
 )
