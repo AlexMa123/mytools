@@ -4,6 +4,8 @@ Tools used to analysis signal
 import numpy as np
 from mkl_fft import fft
 from .phase_sync.tools import hilbert, phase
+from .breathing_freq.breathing_freq import butter_filter
+from collections import Counter
 from numba import jit
 
 
@@ -20,11 +22,11 @@ def powerspectrum(signal, freq=1, removemean=True):
     """
     if removemean:
         signal = signal - np.mean(signal)
-    fft_result = fft(signal)
+    fft_result = fft(signal) / signal.size
     size = signal.size
-    spectrum = np.abs(fft_result[:size//2]) ** 2
-    f = np.fft.fftfreq(size, 1/freq)
-    return f[:size//2], spectrum
+    spectrum = np.abs(fft_result[:size // 2])**2
+    f = np.fft.fftfreq(size, 1 / freq)
+    return f[:size // 2], spectrum
 
 
 @jit
@@ -56,12 +58,12 @@ def interp1dlinear(x, y, xx):
         if x[istart] == xx[j]:
             result[j] = y[istart]
             continue
-        slope = (y[istart] - istart - 1]) / (x[istart] - x[istart - 1])
+        slope = (y[istart] - y[istart - 1]) / (x[istart] - x[istart - 1])
         result[j] = y[istart - 1] + slope * (xx[j] - x[istart - 1])
     return result
 
 
-@numba.njit
+@jit
 def nfreq(signal, n=1):
     """
     n times the signal's frequency
@@ -69,7 +71,7 @@ def nfreq(signal, n=1):
     if n == 1:
         return signal
     else:
-        new_signal = np.empty((signal.size - 1)* n + 1)
+        new_signal = np.empty((signal.size - 1) * n + 1)
         new_signal[::n] = signal
         diff = np.diff(signal)
         for i in range(1, n):
@@ -87,15 +89,12 @@ def resample(signal, old_freq, new_freq, method="interp"):
         if new_freq % old_freq == 0:
             return nfreq(signal, new_freq // old_freq)
         else:
-            t_old = np.arange(0, 1/old_freq * signal.size, 1/old_freq)
-            t_new = np.arange(0, 1/new_freq * signal.size, 1/new_freq)
+            t_old = np.arange(0, 1 / old_freq * signal.size, 1 / old_freq)
+            t_new = np.arange(0, 1 / new_freq * signal.size, 1 / new_freq)
             return interp1dlinear(t_old, signal, t_new)
     else:
         if method == "interp":
             n = 0
-            #while n * old_freq % new_freq != 0:
-            #    n += 1
-            #signal = nfreq(signal, n)
             while (n + old_freq) % new_freq != 0:
                 n += 1
             if n != 0:
@@ -111,5 +110,28 @@ def resample(signal, old_freq, new_freq, method="interp"):
             N = (old_freq * n) // new_freq
         iend = signal.size - signal.size % (N)
         signal = signal[:iend].reshape(-1, N)
-        #return signal
+        # return signal
         return np.mean(signal, axis=1)
+
+
+def isnoise(signal, freq):
+    timelen = signal.size / freq
+    count_signal = Counter(signal)
+    if len(count_signal) < 20:
+        return 1
+    sorted_value = sorted(count_signal.values())
+    if sorted_value[-1] > int(freq) * (timelen / 4):
+        if sorted_value[-2] > int(freq) * (timelen / 5):
+            if sorted_value[-2] > int(freq) * (timelen / 6):
+                return 1
+    f, p = powerspectrum(signal, int(freq))
+    p = p / p.sum()
+    power_band1 = p[(f < 0.5) & (f >= 0.0833)].sum() 
+    power_band2 = p[(f < 1) & (f >= 0.5)].sum()
+    power_band3 = p[f < 0.0833].sum()
+    power_band4 = p[f >= 1].sum()
+
+    if power_band1 > 1.5 * power_band3 and power_band2 > 1.5 * power_band4:
+        return 0
+    else:
+        return 1

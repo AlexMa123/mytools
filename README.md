@@ -11,4 +11,4 @@ pip install git+https://www.github.com/AlexMa123/mytools
 TODO:
 
 - [ ]  Add functions to calculate phase synchronization
-- [ ]  Add functions to detect noise
+- [x]  Add functions to detect noise

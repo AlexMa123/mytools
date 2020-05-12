@@ -3,15 +3,14 @@ import numba
 import numpy as np
 
 
-
 @numba.njit("c16[:](c16[:])", fastmath=True)
 def modifyfft(x):
     N = x.size
     if N % 2 == 0:
-        x[1: N // 2] = x[1: N // 2] * 2
+        x[1:N // 2] = x[1:N // 2] * 2
         x[N // 2 + 1:] = 0
     else:
-        x[1: (N + 1) // 2] = x[1: (N + 1) // 2] * 2
+        x[1:(N + 1) // 2] = x[1:(N + 1) // 2] * 2
         x[(N + 1) // 2:] = 0
     return x
 
