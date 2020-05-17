@@ -22,7 +22,7 @@ def powerspectrum(signal, freq=1, removemean=True):
     """
     if removemean:
         signal = signal - np.mean(signal)
-    fft_result = fft(signal) / signal.size
+    fft_result = fft(signal)
     size = signal.size
     spectrum = np.abs(fft_result[:size // 2])**2
     f = np.fft.fftfreq(size, 1 / freq)
@@ -114,24 +114,30 @@ def resample(signal, old_freq, new_freq, method="interp"):
         return np.mean(signal, axis=1)
 
 
-def isnoise(signal, freq):
+def isnoise(signal, freq, isprint=False):
     timelen = signal.size / freq
     count_signal = Counter(signal)
     if len(count_signal) < 20:
+        if isprint:
+            print("kind 1 noise")
         return 1
     sorted_value = sorted(count_signal.values())
     if sorted_value[-1] > int(freq) * (timelen / 4):
         if sorted_value[-2] > int(freq) * (timelen / 5):
             if sorted_value[-2] > int(freq) * (timelen / 6):
-                return 1
+                if isprint:
+                    print("kind 2 noise")
+                return 2
     f, p = powerspectrum(signal, int(freq))
     p = p / p.sum()
     power_band1 = p[(f < 0.5) & (f >= 0.0833)].sum() 
     power_band2 = p[(f < 1) & (f >= 0.5)].sum()
     power_band3 = p[f < 0.0833].sum()
-    power_band4 = p[f >= 1].sum()
+    power_band4 = p[(f >= 1) & (f <= 2)].sum()
 
-    if power_band1 > 1.5 * power_band3 and power_band2 > 1.5 * power_band4:
+    if power_band4 > 0.5:
+        return 3
+    if power_band1 > 1.5 * (power_band2 + power_band3):
         return 0
     else:
-        return 1
+        return 3
